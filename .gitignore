@@ -24,3 +24,6 @@ node_modules/
 
 db_test.php
 wp-config.php
+.DS_Store
+/scratch.*
+/notes.txt

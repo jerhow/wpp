@@ -34,7 +34,7 @@ TOC:
 // 1. Hooks
 
 // Registers custom shortcodes on init
-add_action('glb_form', 'glb_register_shortcodes');
+add_action('init', 'glb_register_shortcodes');
 
 // ===============================================================================
 // 2. Shortcodes

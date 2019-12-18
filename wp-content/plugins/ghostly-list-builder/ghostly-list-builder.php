@@ -28,6 +28,7 @@ TOC:
 7. Custom post types
 8. Admin pages
 9. Settings
+10. Misc.
 */
 
 // ===============================================================================
@@ -79,4 +80,61 @@ function glb_form_shortcode($args, $content="") {
   ';
 
   return $output;
+}
+
+function glb_add_subscriber_metaboxes($post) {
+  add_meta_box(
+    'glb-subscriber-details',
+    'Subscriber Details',
+    'glb_subscriber_metabox',
+    'glb_subscriber',
+    'normal',
+    'default'
+  );
+}
+
+add_action('add_meta_boxes_glb_subscriber', 'glb_add_subscriber_metaboxes');
+
+function glb_subscriber_metabox() {
+  ?>
+
+  <div class="glb-field-row">
+    <div class="glb-field-container">
+      <p>
+        <label>First Name *</label><br />
+        <input type="text" name="glb_first_name" required="required" class="widefat" />
+      </p>
+    </div>
+  </div>
+
+  <div class="glb-field-row">
+    <div class="glb-field-container">
+      <p>
+        <label>Last Name *</label><br />
+        <input type="text" name="glb_last_name" required="required" class="widefat" />
+      </p>
+    </div>
+  </div>
+
+  <div class="glb-field-row">
+    <div class="glb-field-container">
+      <p>
+        <label>Email *</label><br />
+        <input type="email" name="glb_email" required="required" class="widefat" />
+      </p>
+    </div>
+  </div>
+
+  <div class="glb-field-row">
+    <div class="glb-field-container">
+      <label>Lists</label><br />
+      <ul>
+        <li><label><input name="glb_list[]" value="1" />List 1</label></li>
+        <li><label><input name="glb_list[]" value="2" />List 2</label></li>
+        <li><label><input name="glb_list[]" value="3" />List 3</label></li>
+      </ul>
+    </div>
+  </div>
+
+  <?php
 }

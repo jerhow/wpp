@@ -129,9 +129,24 @@ function glb_subscriber_metabox() {
     <div class="glb-field-container">
       <label>Lists</label><br />
       <ul>
-        <li><label><input name="glb_list[]" value="1" />List 1</label></li>
-        <li><label><input name="glb_list[]" value="2" />List 2</label></li>
-        <li><label><input name="glb_list[]" value="3" />List 3</label></li>
+
+        <?php
+        global $wpdb;
+
+        $list_query = $wpdb->get_results(
+          "SELECT id, post_title FROM {$wpdb->posts} 
+           WHERE post_type = 'glb_list' 
+           AND post_status IN ('draft', 'publish')"
+        );
+
+        if( !is_null($list_query) ) {
+          foreach ($list_query as $list) {
+            echo '<li><label><input name="glb_list[]" type="checkbox" 
+                  value="' . $list->id . '" />' . $list->post_title . '</label></li>';
+          }
+        }
+        ?>
+
       </ul>
     </div>
   </div>

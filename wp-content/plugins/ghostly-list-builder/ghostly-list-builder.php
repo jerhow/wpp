@@ -96,6 +96,8 @@ function glb_add_subscriber_metaboxes($post) {
 add_action('add_meta_boxes_glb_subscriber', 'glb_add_subscriber_metaboxes');
 
 function glb_subscriber_metabox() {
+
+  wp_nonce_field( basename(__FILE__), 'glb_subscriber_nonce' );
   ?>
 
   <div class="glb-field-row">
@@ -153,3 +155,44 @@ function glb_subscriber_metabox() {
 
   <?php
 }
+
+function glb_save_subscriber_meta($post_id, $post) {
+  // Verify nonce
+  if( !isset($_POST['glb_subscriber_nonce']) 
+      || !wp_verify_nonce($_POST['glb_subscriber_nonce'], basename(__FILE__)) ) {
+    return $post_id;
+  }
+
+  // Get the post type object
+  $post_type = get_post_type_object( $post->post_type );
+
+  // Check whether the current user has permission to edit the post
+  if( !current_user_can($post_type->cap->edit_post, $post_id) ) {
+    return $post_id;
+  }
+
+  // Get the posted data and sanitize it
+  $first_name = (isset($_POST['glb_first_name'])) ? sanitize_text_field($_POST['glb_first_name']) : '';
+  $last_name = (isset($_POST['glb_last_name'])) ? sanitize_text_field($_POST['glb_last_name']) : '';
+  $email = (isset($_POST['glb_email'])) ? sanitize_text_field($_POST['glb_email']) : '';
+  $lists = (isset($_POST['glb_list']) && is_array($_POST['glb_list']) ) ? (array) $_POST['glb_list'] : [];
+
+  // Update post meta
+  update_post_meta( $post_id, 'glb_first_name', $first_name );
+  update_post_meta( $post_id, 'glb_last_name', $last_name );
+  update_post_meta( $post_id, 'glb_email', $email );
+
+  // Delete the existing list meta for this post
+  delete_post_meta( $post_id, 'glb_list' );
+
+  // Add new list meta
+  if( !empty($lists) ) {
+    foreach( $lists as $list_id ) {
+      // Add list relational meta value
+      add_post_meta( $post_id, 'glb_list', $list_id, false ); // false == NOT a unique meta key
+    }
+  }
+
+}
+
+add_action( 'save_post', 'glb_save_subscriber_meta', 10, 2);

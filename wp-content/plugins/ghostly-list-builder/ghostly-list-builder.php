@@ -97,14 +97,23 @@ add_action('add_meta_boxes_glb_subscriber', 'glb_add_subscriber_metaboxes');
 
 function glb_subscriber_metabox() {
 
+  global $post;
+  $post_id = $post->id;
+
   wp_nonce_field( basename(__FILE__), 'glb_subscriber_nonce' );
+
+  $first_name = !empty(get_post_meta($post_id, 'glb_first_name', true)) ? get_post_meta($post_id, 'glb_first_name', true) : '';
+  $last_name = !empty(get_post_meta($post_id, 'glb_last_name', true)) ? get_post_meta($post_id, 'glb_last_name', true) : '';
+  $email = !empty(get_post_meta($post_id, 'glb_email', true)) ? get_post_meta($post_id, 'glb_email', true) : '';
+  $lists = !empty(get_post_meta($post_id, 'glb_list', false)) ? get_post_meta($post_id, 'glb_list', false) : [];
   ?>
 
   <div class="glb-field-row">
     <div class="glb-field-container">
       <p>
         <label>First Name *</label><br />
-        <input type="text" name="glb_first_name" required="required" class="widefat" />
+        <input type="text" name="glb_first_name" required="required" class="widefat" 
+          value="<?php echo $first_name; ?>" />
       </p>
     </div>
   </div>
@@ -113,7 +122,8 @@ function glb_subscriber_metabox() {
     <div class="glb-field-container">
       <p>
         <label>Last Name *</label><br />
-        <input type="text" name="glb_last_name" required="required" class="widefat" />
+        <input type="text" name="glb_last_name" required="required" class="widefat" 
+          value="<?php echo $last_name; ?>" />
       </p>
     </div>
   </div>
@@ -122,7 +132,8 @@ function glb_subscriber_metabox() {
     <div class="glb-field-container">
       <p>
         <label>Email *</label><br />
-        <input type="email" name="glb_email" required="required" class="widefat" />
+        <input type="email" name="glb_email" required="required" class="widefat" 
+          value="<?php echo $email; ?>"/>
       </p>
     </div>
   </div>
@@ -143,8 +154,10 @@ function glb_subscriber_metabox() {
 
         if( !is_null($list_query) ) {
           foreach ($list_query as $list) {
+            $checked = in_array($list->id, $lists) ? 'checked="checked"' : '';
+
             echo '<li><label><input name="glb_list[]" type="checkbox" 
-                  value="' . $list->id . '" />' . $list->post_title . '</label></li>';
+                  value="' . $list->id . '" ' . $checked . ' />' . $list->post_title . '</label></li>';
           }
         }
         ?>
